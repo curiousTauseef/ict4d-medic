@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1">
+ 
+<meta name="maintainer" content="filip.dbrsk@gmail.com"/>
+ 
+<form id="MainMenu">
+  <field name="Area">
+   <prompt bargeintype="hotword" timeout="3s">
+    This is the ICT4D Medic Main Menu for Burkina Faso.
+    Are you coming from the West, Center or East?
+   </prompt>
+ 
+   <!-- Grammar for available responses for either West, Center or East.-->
+   <grammar xml:lang="en-US" root = "MEATPLANT">
+    <rule id="MEATPLANT" scope="public">
+     <one-of>
+ 
+     <!-- If the user says any of the following choices, then the grammar assigns "west" to -->
+     <!-- the Area variable. -->
+     <item>
+     <one-of>
+      <item>west</item>
+      <item>ouest</item>
+      <item>Boucle du Mouhoun</item>
+      <item>Cascades</item>
+      <item>Hauts-Bassins</item>
+      <item>Sud-Ouest</item>
+      <item>Centre-Ouest</item>
+     </one-of>
+     <tag>out.Area ="west";</tag>
+     </item>
+     <!-- If the user says any of the following choices, then the grammar assigns "center" to -->
+     <!-- the Area variable. -->
+     <item>
+     <one-of>
+      <item>center</item>
+      <item>middle</item>
+      <item>Centre</item>
+      <item>Nord</item>
+      <item>Centre-Nord</item>
+      <item>Centre-Sud</item>
+      <item>Plateau-Central</item>
+     </one-of>
+     <tag>out.Area ="center";</tag>
+     </item>
+     <!-- If the user says any of the following choices, then the grammar assigns "east" to -->
+     <!-- the Area variable. -->
+     <item>
+     <one-of>
+      <item>east</item>
+      <item>Est</item>
+      <item>Sahel</item>
+      <item>Centre-Est</item>
+     </one-of>
+     <tag>out.Area ="east";</tag>
+     </item>
+     </one-of>
+    </rule>
+   </grammar>
+    <!-- If no input is heard.-->
+   <noinput>
+    <prompt bargeintype="hotword" timeout="3s">
+     I did not hear anything. Please try again.
+    </prompt>
+    <reprompt/>
+   </noinput>
+    <!-- If the entered choice is not recognized.-->
+   <nomatch>
+    <prompt bargein="hotword" timeout="3s">
+     I did not recognize that choice. Please try again.
+    </prompt>
+    <reprompt/>
+   </nomatch>
+  </field>
+ 
+   <!-- If either West, Center or East is entered, let the user know it is understood and store the variable value. Then, redirect to the emergency menu. -->
+<filled>
+   <assign name="session.MyArea" expr="Area" />
+
+   <if cond="Area == 'west'">
+	<prompt bargein="false">
+     Dear Friend, you come from the western part of Burkina Faso. 
+	</prompt>
+      <goto next="http://webhosting.voxeo.net/187944/www/emergencymenu.xml"/>
+   <elseif cond="Area == 'center'"/>
+     <assign name="MyArea" expr="'center'" />
+	<prompt bargein="false">
+     Dear Friend, you come from the  central part of Burkina Faso. 
+	</prompt>
+      <goto next="http://webhosting.voxeo.net/187944/www/emergencymenu.xml"/>
+   <elseif cond="Area == 'east'"/>
+     <assign name="MyArea" expr="'east'" />
+	<prompt bargein="false">
+     Dear Friend, you come from the  eastern part of Burkina Faso. 
+	</prompt>
+      <goto next="http://webhosting.voxeo.net/187944/www/emergencymenu.xml"/>
+	
+   </if>
+</filled>
+</form>
+ 
+</vxml>

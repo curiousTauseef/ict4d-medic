@@ -1,0 +1,750 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version = "2.1" application="http://webhosting.voxeo.net/187944/www/medical.xml" >
+ 
+<meta name="maintainer" content="filip.dbrsk@gmail.com"/>
+ 
+<form id="EmergencyMenu"> 
+  <field name="EmLevel">
+   <prompt bargeintype="hotword" timeout="3s">
+	Welcome to the emergency menu. 
+	Do you need a doctor immediately?
+   </prompt>
+ 
+   <!-- Grammar for available responses for either "high" or "low" emergency.-->
+   <grammar xml:lang="en-US" root = "MEATPLANT">
+    <rule id="MEATPLANT" scope="public">
+     <one-of>
+ 
+     <!-- If the user says any of the following choices, then the grammar assigns "high" to -->
+     <!-- the EmLevel variable. -->
+     <item>
+     <one-of>
+      <item>yes</item>
+      <item>oui</item>
+     </one-of>
+     <tag>out.EmLevel="high";</tag>
+     </item>
+     <!-- If the user says any of the following choices, then the grammar assigns "low" to -->
+     <!-- the EmLevel variable. -->
+     <item>
+     <one-of>
+      <item>no</item>
+     </one-of>
+     <tag>out.EmLevel ="low";</tag>
+     </item>
+     </one-of>
+    </rule>
+   </grammar>
+    <!-- if no input.-->
+   <noinput>
+    <prompt bargeintype="hotword" timeout="3s">
+     I did not hear anything. Please try again.
+    </prompt>
+    <reprompt/>
+   </noinput>
+    <!-- if not understood input.--> 
+   <nomatch>
+    <prompt bargeintype="hotword" timeout="3s">
+     I did not recognize that emergency choice. Please try again.
+    </prompt>
+    <reprompt/>
+   </nomatch>
+  </field>
+     <!-- if input is ok, redirect to the 'high' or the 'low' emergency menu.-->
+<filled>
+   <if cond="EmLevel == 'high'">
+      <goto next="#High"/>
+   <elseif cond="EmLevel == 'low'"/>
+      <goto next="#CareOrInfo"/>
+   </if>
+</filled>
+</form>
+ 
+<!-- If the answer was "high", just connect to a local doctor. -->
+<form id="High">
+   <block>
+   <prompt bargein="false">
+   Your emergency level is high. You will now be connected to a local doctor.
+   </prompt>
+   <audio src="groovy.wav"/>
+   </block>
+   <filled>
+  <!-- This will never get hit.-->
+  </filled>
+</form>
+
+<!-- If the answer was "low", user is redirected to a menu to be asked whether he wants instructions or general epidemic information. -->
+<form id="CareOrInfo"> 
+  <field name="CareInfo">
+   <prompt bargeintype="hotword" timeout="3s">
+	Would you like to receive treatment instructions or general epidemics information? Say instructions or information.
+   </prompt>
+ 
+   <!-- Grammar for available responses for either "instructions" or "information".-->
+   <grammar xml:lang="en-US" root = "MEATPLANT">
+    <rule id="MEATPLANT" scope="public">
+     <one-of>
+ 
+     <!-- If the user says any of the following choices, then the grammar assigns "instructions" to -->
+     <!-- the CareInfo variable. -->
+     <item>
+     <one-of>
+      <item>instructions</item>
+     </one-of>
+     <tag>out.CareInfo="instructions";</tag>
+     </item>
+     <!-- If the user says any of the following choices, then the grammar assigns "information" to -->
+     <!-- the CareInfo variable. -->
+     <item>
+     <one-of>
+      <item>information</item>
+     </one-of>
+     <tag>out.CareInfo="information";</tag>
+     </item>
+     </one-of>
+    </rule>
+   </grammar>
+     <!-- if no input.-->
+   <noinput>
+    <prompt bargeintype="hotword" timeout="3s">
+     I did not hear anything. Please try again.
+    </prompt>
+    <reprompt/>
+   </noinput>
+     <!-- if no input match to the available options.-->
+   <nomatch>
+    <prompt bargeintype="hotword" timeout="3s">
+     I did not recognize that emergency choice. Please try again.
+    </prompt>
+    <reprompt/>
+   </nomatch>
+  </field>
+     <!-- if input is correct, redirect to the instructions/information menu.-->
+<filled>
+   <if cond="CareInfo == 'instructions'">
+      <goto next="#Instruct"/>
+   <elseif cond="CareInfo== 'information'"/>
+      <goto next="#Info"/>
+   </if>
+</filled>
+</form>
+ 
+<!-- If the answer was "instructions", start iterating the disease menu. -->
+<form id="Instruct">
+  <field name="Category">
+   <prompt bargeintype="hotword" timeout="3s">
+   Your emergency level is low. Please identify your disease. 
+   Say one for cardiovascular, two for dermatological, three for neuroscience, four for cancer and five for diabetic or metabolic. In case your disease is specific and can not be categorized in the above categories, please say doctor to be connected to a local doctor.
+   </prompt>
+  </field>
+ 
+   <!-- Grammar for available responses for the disease categories.-->
+   <grammar xml:lang="en-US" root = "MEATPLANT">
+    <rule id="MEATPLANT" scope="public">
+     <one-of>
+     <!-- If the user says any of the following choices, then the grammar assigns "cardio" to -->
+     <!-- the Category variable. -->
+     <item>
+     <one-of>
+      <item>cardio</item>
+      <item>cardiovascular</item>
+      <item>heart</item>
+      <item>one</item>
+     </one-of>
+     <tag>out.Category="cardio";</tag>
+     </item>
+     <!-- If the user says any of the following choices, then the grammar assigns "derma" to -->
+     <!-- the Category variable. -->
+     <item>
+     <one-of>
+      <item>derma</item>
+      <item>dermatology</item>
+      <item>skin</item>
+      <item>two</item>
+     </one-of>
+     <tag>out.Category="derma";</tag>
+     </item>
+     <!-- If the user says any of the following choices, then the grammar assigns "neuro" to -->
+     <!-- the Category variable. -->
+     <item>
+     <one-of>
+      <item>neuro</item>
+      <item>neuroscience</item>
+      <item>three</item>
+     </one-of>
+     <tag>out.Category="neuro";</tag>
+     </item>
+     <!-- If the user says any of the following choices, then the grammar assigns "cancer" to -->
+     <!-- the Category variable. -->
+     <item>
+     <one-of>
+      <item>cancer</item>
+      <item>oncology</item>
+      <item>four</item>
+     </one-of>
+     <tag>out.Category="cancer";</tag>
+     </item>
+     <!-- If the user says any of the following choices, then the grammar assigns "diabemetabo" to -->
+     <!-- the Category variable. -->
+     <item>
+     <one-of>
+      <item>diabetes</item>
+      <item>metabolics</item>
+      <item>five</item>
+     </one-of>
+     <tag>out.Category="diabemetabo";</tag>
+     </item>
+     <!-- If the user says any of the following choices, then the grammar assigns "doctor" to -->
+     <!-- the Category variable. -->
+     <item>
+     <one-of>
+      <item>doctor</item>
+      <item>medic</item>
+     </one-of>
+     <tag>out.Category="doctor";</tag>
+     </item>
+     </one-of>
+    </rule>
+   </grammar>
+     <!-- if no input.-->
+   <noinput>
+    <prompt bargeintype="hotword" timeout="3s">
+     I did not hear anything. Please try again.
+    </prompt>
+    <reprompt/>
+   </noinput>
+     <!-- if no input match.-->
+   <nomatch>
+    <prompt bargeintype="hotword" timeout="3s">
+     I did not recognize that emergency choice. Please try again.
+    </prompt>
+    <reprompt/>
+   </nomatch>
+    <!-- if input is correct, redirect to the specific disease or to a doctor.-->
+   <filled>
+   <if cond="Category == 'cardio'">
+      <goto next="#Cardio"/>
+   <elseif cond="Category== 'derma'"/>
+      <goto next="#Derma"/>
+   <elseif cond="Category== 'neuro'"/>
+      <goto next="#Neuro"/>
+   <elseif cond="Category== 'cancer'"/>
+      <goto next="#Cancer"/>
+   <elseif cond="Category== 'diabemetabo'"/>
+      <goto next="#Diabemetabo"/>
+   <elseif cond="Category== 'doctor'"/>
+      <goto next="#Doctor"/>
+   </if>
+   </filled>
+</form>
+
+<!-- If the answer was "cardio", it gives this advice. -->
+<form id="Cardio">
+  <field name="Cardio">
+   <prompt bargein="false" timeout="3s">
+   You have cardio disease. Here are some general advices to reduce the heart disease risk.
+   1. Quit smoking
+   2. Improve cholesterol levels
+   3. Control high blood pressure
+   4. Get sportive and active
+   5. Eat healthily
+   6. Achieve and maintain an appropriate body weight
+   7. Manage stress and anger
+   8. Control diabetes
+   If you still wish to get connected to a local doctor, please say doctor. Otherwise, the application will repeat the cardio instructions once more.
+   </prompt>
+   <!-- Grammar for response for doctor.-->
+   <grammar xml:lang="en-US" root = "MEATPLANT">
+    <rule id="MEATPLANT" scope="public">
+     <one-of>
+ 
+     <!-- If the user says any of the following choices, then the grammar assigns "doctor" to -->
+     <!-- the Cardio variable. -->
+     <item>
+     <one-of>
+      <item>doctor</item>
+      <item>medic</item>
+     </one-of>
+     <tag>out.Cardio="doctor";</tag>
+     </item>
+     </one-of>
+    </rule>
+   </grammar>
+ 
+   </field>
+    <!-- if user said doctor, go to the doctor form.-->
+   <filled>
+   <if cond="Cardio== 'doctor'">
+      <goto next="#Doctor"/>
+   </if>
+  </filled>
+</form>
+
+<!-- If the answer was "derma", it gives derma instructions. -->
+<form id="Derma">
+  <field name="Derma">
+   <prompt bargein="false" timeout="3s">
+   You have dermatological disease. Here are some advices to keep your skin in a good shape.
+   1. Wash twice a day and after sweating
+   2. Use your fingertips to apply a gentle, non-abrasive cleanser
+   3. Be gentle with your skin
+   4. Let your skin heal naturally
+   5. Stay out of sun and tanning beds. They damage your skin.
+   If you still wish to get connected to a local doctor, please say doctor. Otherwise, the application will repeat the dermatological instructions once more.
+   </prompt>
+   <!-- Grammar for response for doctor.-->
+   <grammar xml:lang="en-US" root = "MEATPLANT">
+    <rule id="MEATPLANT" scope="public">
+     <one-of>
+ 
+     <!-- If the user says any of the following choices, then the grammar assigns "doctor" to -->
+     <!-- the Derma variable. -->
+     <item>
+     <one-of>
+      <item>doctor</item>
+      <item>medic</item>
+     </one-of>
+     <tag>out.Derma="doctor";</tag>
+     </item>
+     </one-of>
+    </rule>
+   </grammar>
+   </field>
+    <!-- if input doctor, go to the doctor form.-->
+   <filled>
+   <if cond="Derma== 'doctor'">
+      <goto next="#Doctor"/>
+   </if>
+  </filled>
+</form>
+
+<!-- If the answer was "neuro", it gives neuro advices. -->
+<form id="Neuro">
+  <field name="Neuro">
+   <prompt bargeintype="hotword" timeout="3s">
+   You have neuroscientific disease. In case it is Parkinson's disease, say parkinson. If it is Alzheimer's disease, say Alzheimer. If your disease is more specific, say doctor to connect to a local doctor.
+   </prompt>
+   <!-- Grammar for response for doctor.-->
+   <grammar xml:lang="en-US" root = "MEATPLANT">
+    <rule id="MEATPLANT" scope="public">
+     <one-of>
+ 
+     <!-- If the user says any of the following choices, then the grammar assigns "doctor" to -->
+     <!-- the Neuro variable. -->
+     <item>
+     <one-of>
+      <item>doctor</item>
+      <item>medic</item>
+     </one-of>
+     <tag>out.Neuro="doctor";</tag>
+     </item>
+     <!-- If the user says any of the following choices, then the grammar assigns "alzheimer" to -->
+     <!-- the Neuro variable. -->
+     <item>
+     <one-of>
+      <item>Alzheimer</item>
+      <item>Alzheimer's</item>
+      <item>Alzheimer's disease</item>
+     </one-of>
+     <tag>out.Neuro="alzheimer";</tag>
+     </item>
+     <!-- If the user says any of the following choices, then the grammar assigns "parkinson" to -->
+     <!-- the Neuro variable. -->
+     <item>
+     <one-of>
+      <item>Parkinson</item>
+      <item>Parkinson's</item>
+      <item>Parkinson's disease</item>
+     </one-of>
+     <tag>out.Neuro="parkinson";</tag>
+     </item>
+     </one-of>
+    </rule>
+   </grammar>
+ 
+   <noinput>
+    <prompt bargeintype="hotword" timeout="3s">
+     I did not hear anything. Please try again.
+    </prompt>
+    <reprompt/>
+   </noinput>
+ 
+   <nomatch>
+    <prompt bargeintype="hotword" timeout="3s">
+     I did not recognize that emergency choice. Please try again.
+    </prompt>
+    <reprompt/>
+   </nomatch>
+
+   </field>
+   <filled>
+   <if cond="Neuro== 'doctor'">
+      <goto next="#Doctor"/>
+   <elseif cond="Neuro== 'alzheimer'"/>
+      <goto next="#Alzheimer"/>
+   <elseif cond="Neuro== 'parkinson'"/>
+      <goto next="#Parkinson"/>
+   </if>
+  </filled>
+</form>
+<!-- If the answer was "alzheimer", it prompts the following statement. -->
+<form id="Alzheimer">
+  <field name="Alzheim">
+   <prompt bargein="false" timeout="3s">
+   You have Alzheimer's disease. Here are some advices for daily life.
+   1. Set realistic goals and focus on what you can do today. 
+   2. Develop a daily routine.
+   3. Approach one task at a time and don't get stuck. 
+   4. Know that you have more than one chance to solve most problems. 
+   5. Recognize the triggers that cause you stress. 
+   6. Important: Accepting help from others is not a bad thing.
+   If you still wish to connect to a doctor to ask further questions, say doctor. Otherwise, the application will repeat the alzheimer instructions once more.
+   </prompt>
+   <!-- Grammar for response for doctor.-->
+   <grammar xml:lang="en-US" root = "MEATPLANT">
+    <rule id="MEATPLANT" scope="public">
+     <one-of>
+ 
+     <!-- If the user says any of the following choices, then the grammar assigns "doctor" to -->
+     <!-- the Alzheim variable. -->
+     <item>
+     <one-of>
+      <item>doctor</item>
+      <item>medic</item>
+     </one-of>
+     <tag>out.Alzheim="doctor";</tag>
+     </item>
+     </one-of>
+    </rule>
+   </grammar>
+
+   </field>
+   <filled>
+   <if cond="Alzheim== 'doctor'">
+      <goto next="#Doctor"/>
+   </if>
+  </filled>
+
+</form>
+<!-- If the answer was "parkinson", it prompts the following statement. -->
+<form id="Parkinson">
+  <field name="Parkins">
+   <prompt bargein="false" timeout="3s">
+   You have Parkinson's disease. Here are some advices for daily life.
+   1. Lead as active and as normal a life as possible
+   2. Try to do the things yourself, even if it takes more time.
+   3. Conserve your energy.
+   4. Plan periods of rest.
+   5. Get a good night sleep.
+   6. Avoid extreme physical activity.
+   If you still wish to connect to a doctor to ask further questions, say doctor. Otherwise, the application will repeat the parkinson instructions once more.
+   </prompt>
+   <!-- Grammar for response for doctor.-->
+   <grammar xml:lang="en-US" root = "MEATPLANT">
+    <rule id="MEATPLANT" scope="public">
+     <one-of>
+ 
+     <!-- If the user says any of the following choices, then the grammar assigns "doctor" to -->
+     <!-- the Parkins variable. -->
+     <item>
+     <one-of>
+      <item>doctor</item>
+      <item>medic</item>
+     </one-of>
+     <tag>out.Parkins="doctor";</tag>
+     </item>
+     </one-of>
+    </rule>
+   </grammar>
+   </field>
+    <!-- redirect to doctor menu.-->
+   <filled>
+   <if cond="Parkins== 'doctor'">
+      <goto next="#Doctor"/>
+   </if>
+  </filled>
+</form>
+
+<!-- If the answer was "cancer", it gives cancer advice. -->
+<form id="Cancer">
+ <field name="Cancer">
+   <prompt bargein="false" timeout="3s">
+   You have cancer disease. Here are some advices to prevent or fight with cancer.
+   1. Be as lean as possible without becoming underweight.
+   2. Be physically active for at least 30 minutes every day.
+   3. Avoid sugary drinks, and limit consumption of high-calorie foods, especially those low in fiber and rich in fat or added sugar.
+   4. Eat more of a variety of vegetables, fruits, whole grains, and legumes (such as beans).
+   5. Limit consumption of red meats (including beef, pork, and lamb) and avoid processed meats.
+   6. If you drink alcohol, limit your daily intake to two drinks for men and one drink for women.
+   7. Limit consumption of salty foods and food processed with salt (sodium).
+   8. Don't use supplements to try to protect against cancer.
+   9. It's best for mothers to exclusively breastfeed their babies for up to six months and then add other liquids and foods.
+   10. After treatment, cancer survivors should follow the recommendations for cancer prevention.
+   If you still wish to get connected to a local doctor, please say doctor. Otherwise, the application will repeat the cancer instructions once more.
+   </prompt>
+   <!-- Grammar for response for doctor.-->
+   <grammar xml:lang="en-US" root = "MEATPLANT">
+    <rule id="MEATPLANT" scope="public">
+     <one-of>
+ 
+     <!-- If the user says any of the following choices, then the grammar assigns "doctor" to -->
+     <!-- the Cancer variable. -->
+     <item>
+     <one-of>
+      <item>doctor</item>
+      <item>medic</item>
+     </one-of>
+     <tag>out.Cancer="doctor";</tag>
+     </item>
+     </one-of>
+    </rule>
+   </grammar>
+   </field>
+    <!-- redirect to doctor form.-->
+   <filled>
+   <if cond="Cancer== 'doctor'">
+      <goto next="#Doctor"/>
+   </if>
+  </filled>
+</form>
+
+<!-- If the answer was "diabemetabo", it prompts the following statement to proceed with the menu. -->
+<form id="Diabemetabo">
+  <field name="Diameta">
+   <prompt bargeintype="hotword" timeout="3s">
+   You have diabetic or metabolic disease. In case it is diabetic disease, say diabetic. If it is metabolic disease, say metabolic. If your disease is more specific, say doctor to connect to a local doctor. Otherwise, the application will repeat the diabetical and metabolical instructions once more.
+   </prompt>
+   <!-- Grammar for response for doctor.-->
+   <grammar xml:lang="en-US" root = "MEATPLANT">
+    <rule id="MEATPLANT" scope="public">
+     <one-of>
+ 
+     <!-- If the user says any of the following choices, then the grammar assigns "doctor" to -->
+     <!-- the Diameta variable. -->
+     <item>
+     <one-of>
+      <item>doctor</item>
+      <item>medic</item>
+     </one-of>
+     <tag>out.Diameta="doctor";</tag>
+     </item>
+     <!-- If the user says any of the following choices, then the grammar assigns "diabetic" to -->
+     <!-- the Diameta variable. -->
+     <item>
+     <one-of>
+      <item>diabetic</item>
+      <item>diabetis</item>
+     </one-of>
+     <tag>out.Diameta="diabetic";</tag>
+     </item>
+     <!-- If the user says any of the following choices, then the grammar assigns "metabolic" to -->
+     <!-- the Diameta variable. -->
+     <item>
+     <one-of>
+      <item>metabolic</item>
+     </one-of>
+     <tag>out.Diameta="metabolic";</tag>
+     </item>
+     </one-of>
+    </rule>
+   </grammar>
+     <!-- if no input.-->
+   <noinput>
+    <prompt bargeintype="hotword" timeout="3s">
+     I did not hear anything. Please try again.
+    </prompt>
+    <reprompt/>
+   </noinput>
+     <!-- if no input match.-->
+   <nomatch>
+    <prompt bargeintype="hotword" timeout="3s">
+     I did not recognize that emergency choice. Please try again.
+    </prompt>
+    <reprompt/>
+   </nomatch>
+   </field>
+    <!-- redirect to diabetic, metabolic or doctor form.-->
+   <filled>
+   <if cond="Diameta== 'doctor'">
+      <goto next="#Doctor"/>
+   <elseif cond="Diameta== 'diabetic'"/>
+      <goto next="#Diabetic"/>
+   <elseif cond="Diameta== 'metabolic'"/>
+      <goto next="#Metabolic"/>
+   </if>
+  </filled>
+</form>
+
+<!-- If the answer was "diabetic", it gives advice on diabetic. -->
+<form id="Diabetic">
+  <field name="Dia">
+   <prompt bargein="false" timeout="3s">
+   You have diabetic disease. Here are some advices for daily life.
+   1. Dont smoke. Smoking increases your chance of having type 2 diabetes.
+   2. Lose weight if you are overweight or obese.
+   3. Stay active. Physical activity can prevent or delay type 2 diabetes in adults who are at high risk for the disease.
+   4. Do a healthy diet and physical activity program.
+   5. Lose weight (if overweight or obese)
+   6. Use medicines to control blood sugar by helping the body use insulin better.
+   If you still wish to connect to a doctor to ask further questions, say doctor. Otherwise, the application will repeat the diabetic instructions once more.
+   </prompt>
+   <!-- Grammar for response for doctor.-->
+   <grammar xml:lang="en-US" root = "MEATPLANT">
+    <rule id="MEATPLANT" scope="public">
+     <one-of>
+     <!-- If the user says any of the following choices, then the grammar assigns "doctor" to -->
+     <!-- the Dia variable. -->
+     <item>
+     <one-of>
+      <item>doctor</item>
+      <item>medic</item>
+     </one-of>
+     <tag>out.Dia="doctor";</tag>
+     </item>
+     </one-of>
+    </rule>
+   </grammar>
+   </field>
+    <!-- redirect to doctor form.-->
+   <filled>
+   <if cond="Dia== 'doctor'">
+      <goto next="#Doctor"/>
+   </if>
+  </filled>
+</form>
+
+<!-- If the answer was "metabolic", it gives metabolic advice. -->
+<form id="Metabolic">
+  <field name="Meta">
+   <prompt bargein="false" timeout="3s">
+   You have metabolic disease. Here are some advices for daily life.
+   1. Exercise. Start slowly. The American Heart Association recommends, if possible, that you gradually step up to exercising on most days of the week for 30-60 minutes. Consult your health care provider if you have any physical limitations or concerns.
+   2. Eat a healthy diet with lots of fruits and vegetables, lean protein, whole grains, and low fat dairy, and go easy on the saturated fats, trans fat, cholesterol, and salt.
+   3. Lose weight if you're overweight.
+   4. Quit smoking if you smoke. Now.
+   5. Schedule regular checkups with your doctor. Since metabolic syndrome doesn't have symptoms, you need regular doctor visits to check your blood pressure, cholesterol, and blood sugar.
+   If you still wish to connect to a doctor to ask further questions, say doctor. Otherwise, the application will repeat the metabolic instructions once more.
+   </prompt>
+   <!-- Grammar for response for doctor.-->
+   <grammar xml:lang="en-US" root = "MEATPLANT">
+    <rule id="MEATPLANT" scope="public">
+     <one-of>
+ 
+     <!-- If the user says any of the following choices, then the grammar assigns "doctor" to -->
+     <!-- the Meta variable. -->
+     <item>
+     <one-of>
+      <item>doctor</item>
+      <item>medic</item>
+     </one-of>
+     <tag>out.Meta="doctor";</tag>
+     </item>
+     </one-of>
+    </rule>
+   </grammar>
+   </field>
+    <!-- redirect to doctor menu.-->
+   <filled>
+   <if cond="Meta== 'doctor'">
+      <goto next="#Doctor"/>
+   </if>
+  </filled>
+</form>
+
+<!-- If the answer was "doctor", user gets connected to a local doctor. -->
+<form id="Doctor">
+   <block>
+   <prompt bargein="false">
+   Dear user, please hold on. You will now be connected to a local doctor.
+   </prompt>
+   <audio src="groovy.wav"/>
+   </block>
+   <filled>
+  <!-- This will never get hit.-->
+  </filled>
+</form>
+
+<!-- If the answer was "information", it gives local information on epidemics. -->
+<form id="Info">
+   <block>
+	<prompt bargeintype="hotword" timeout="3s">
+   You have no emergency. 
+   Following is an information about the current epidemic in your area and advices on prevention.
+	</prompt>
+   <if cond="session.MyArea == 'west'">
+	<prompt bargeintype="hotword" timeout="3s">
+      News for the west: There are currently no epidemics in this area. 
+	</prompt>
+   <elseif cond="session.MyArea == 'center'"/>
+	<prompt bargeintype="hotword" timeout="3s">
+      News for the center: There is meningitis epidemics. 
+      A total of 714 people have died since 1 January out of 7,184 cases. 
+      Best prevention for this epidemics is to ensure you have been vaccinated.
+	</prompt>
+   <elseif cond="session.MyArea == 'east'"/>
+	<prompt bargeintype="hotword" timeout="3s">
+      In the eastern Burkina Faso, there is HIV disease spread in the last month. 
+      Please make sure you use prevention and reduce your sexual activity.
+	</prompt>
+   </if>
+   </block>
+
+   <field name="ConsDoctor">
+   <prompt bargeintype="hotword" timeout="3s">
+     Would you like to connect to a doctor to ask further questions?
+   </prompt>
+   <!-- Grammar for available responses for consultant doctor.-->
+   <grammar xml:lang="en-US" root = "SomeRoot">
+    <rule id="SomeRoot" scope="public">
+     <one-of>
+ 
+     <!-- If the user says any of the following choices, then the grammar assigns "yes" to -->
+     <!-- the ConsDoctor variable. -->
+     <item>
+     <one-of>
+      <item>yes</item>
+      <item>oui</item>
+     </one-of>
+     <tag>out.ConsDoctor="yes";</tag>
+     </item>
+     <!-- If the user says any of the following choices, then the grammar assigns "no" to -->
+     <!-- the Consult variable. -->
+     <item>
+     <one-of>
+      <item>no</item>
+     </one-of>
+     <tag>out.ConsDoctor="no";</tag>
+     </item>
+     </one-of>
+    </rule>
+   </grammar>
+    <!-- if no input.--> 
+   <noinput>
+    <prompt bargeintype="hotword" timeout="3s">
+     I did not hear anything. Please try again.
+    </prompt>
+    <reprompt/>
+   </noinput>
+     <!-- if no input is matched.-->
+   <nomatch>
+    <prompt bargeintype="hotword" timeout="3s">
+     I did not recognize that choice. Please try again.
+    </prompt>
+    <reprompt/>
+   </nomatch>
+  </field>
+    <!-- if input is entered, assess it.-->
+<filled>
+      <if cond="ConsDoctor== 'yes'">
+	<prompt bargein="false">
+     Please be patient for a few moments while we connect you to a consultant doctor. 
+	</prompt>
+	<audio src="groovy.wav"/>
+   <elseif cond="ConsDoctor == 'no'"/>
+	<prompt bargein="false">
+     Thank you and goodbye!
+	</prompt>
+   </if>
+</filled>
+</form>
+</vxml>
